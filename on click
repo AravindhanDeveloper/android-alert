@@ -1,0 +1,4 @@
+    public void second(View V){
+        Intent i = new Intent(this,MainActivity2.class);
+        startActivity(i);
+    }
