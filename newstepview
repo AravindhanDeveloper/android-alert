@@ -1,0 +1,183 @@
+package com.taizo.taizo_employer.Activities;
+
+
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+
+import com.badoualy.stepperindicator.StepperIndicator;
+import com.taizo.taizo_employer.Common.RootActivity;
+import com.taizo.taizo_employer.Fragments.CompanyDetailsFragment;
+import com.taizo.taizo_employer.Fragments.EligibilityFagment;
+import com.taizo.taizo_employer.Fragments.NewPostJobDetailsFragment;
+import com.taizo.taizo_employer.Fragments.Personilizationfragment;
+import com.taizo.taizo_employer.Fragments.PostJobDetailsFragment;
+import com.taizo.taizo_employer.Fragments.ReviewFragment;
+import com.taizo.taizo_employer.Common.GpsUtils;
+import com.taizo.taizo_employer.Common.NonSwipeableViewPager;
+import com.taizo.taizo_employer.R;
+import com.taizo.taizo_employer.Common.AppLocationService;
+import com.taizo.taizo_employer.Common.LocationAddress;
+import com.taizo.taizo_employer.Common.PreferencesHelper;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class NewPostJobActivity extends RootActivity implements NewPostJobDetailsFragment.OnStepOneListener,
+        Personilizationfragment.OnStepTwoListener {
+
+    public NonSwipeableViewPager mNoSwipeViewPager;
+    private StepperIndicator stepperIndicator;
+    private ImageView back_btn;
+    SectionsPagerAdapter mSectionsPagerAdapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_post_job);
+
+        initViews();
+        closeKeyboard();
+
+
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter.addFragment(new NewPostJobDetailsFragment(), getResources().getString(R.string.job_details));
+        mSectionsPagerAdapter.addFragment(new Personilizationfragment(),"Personilizatin");
+//        mSectionsPagerAdapter.addFragment(new CompanyDetailsFragment(), getResources().getString(R.string.contact));
+//        mSectionsPagerAdapter.addFragment(new ReviewFragment().newInstance(""),
+//                getResources().getString(R.string.review));
+
+        mNoSwipeViewPager.setAdapter(mSectionsPagerAdapter);
+        stepperIndicator.showLabels(true);
+        stepperIndicator.setViewPager(mNoSwipeViewPager);
+
+        back_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(NewPostJobActivity.this, ManageJobsActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+    }
+
+
+
+    private void closeKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+    
+    private void initViews() {
+        mNoSwipeViewPager = findViewById(R.id.no_swipe_viewpager);
+        stepperIndicator = findViewById(R.id.stepperIndicator);
+        back_btn = findViewById(R.id.back_btn);
+    }
+
+    
+    private static class SectionsPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public SectionsPagerAdapter(FragmentManager supportFragmentManager) {
+            super(supportFragmentManager);
+        }
+
+        @NonNull
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+
+
+            return mFragmentTitleList.get(position);
+
+        }
+    }
+
+    @Override
+    public void onNextPressed(Fragment fragment) {
+//        if (fragment instanceof NewPostJobDetailsFragment) {
+//            mNoSwipeViewPager.setCurrentItem(1, true);
+//        }
+//
+//        else if (fragment instanceof Personilizationfragment) {
+//
+//            PreferencesHelper.setPreference(NewPostJobActivity.this, PreferencesHelper.PREF_Industry, "");
+//            PreferencesHelper.setPreference(NewPostJobActivity.this, PreferencesHelper.PREF_JOBROLE, "");
+//
+//            Toast.makeText(this, "Thanks For Posting Job.", Toast.LENGTH_SHORT).show();
+//            Intent intent = new Intent(NewPostJobActivity.this, ManageJobsActivity.class);
+//            startActivity(intent);
+//            finish();
+//        }else {
+//
+//        }
+    }
+
+    @Override
+    public void onBackPressed(Fragment fragment) {
+//        if (fragment instanceof Personilizationfragment) {
+//            mNoSwipeViewPager.setCurrentItem(0, true);
+//        } else if (fragment instanceof CompanyDetailsFragment) {
+//            mNoSwipeViewPager.setCurrentItem(1, true);
+//        } else if (fragment instanceof ReviewFragment) {
+//            mNoSwipeViewPager.setCurrentItem(2, true);
+//        } else {
+//
+//        }
+    }
+
+
+
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(NewPostJobActivity.this, ManageJobsActivity.class);
+        startActivity(intent);
+        finish();
+    }
+}
+
